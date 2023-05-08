@@ -62,8 +62,8 @@
             <span
               class="status"
               :class="{
-                'status-closed': p.active,
-                'status-open': !p.active,
+                'status-active': p.active,
+                'status-inactive': !p.active,
               }"
             >
               {{ p.active ? "Active" : "Inactive" }}
@@ -75,13 +75,14 @@
 
     <button class="addBtn" @click="showForm">Add a Pokemon</button>
 
-    <form class="TODO" v-if="formShow" v-on:submit.prevent="savePokemon">
+    <form class="form" v-if="formShow" v-on:submit.prevent="savePokemon">
       <input type="text" placeholder="Name" v-model="pokemon.name" />
+      <!-- 
       <input type="text" placeholder="Type 1" v-model="pokemon.type1" />
       <input type="text" placeholder="Type 2" v-model="pokemon.type2" />
-
+      -->
       <label for="rating">Level: </label>
-      <select id="priority" v-model.number="pokemon.priority">
+      <select id="priority" v-model="pokemon.level">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -96,6 +97,7 @@
 
 
 <script>
+import PokeService from "../services/PokeService.js";
 export default {
   data() {
     return {
@@ -111,6 +113,8 @@ export default {
       },
       formShow: false,
       defaultimg: "pokeball.png",
+      errorCode: "",
+      errorMessage: ""
     };
   },
   computed: {
@@ -119,33 +123,54 @@ export default {
       return date.toLocaleDateString();
     },
     numberOfPokemon() {
-      return this.$store.state.lastId;
+      return this.$store.state.pokemon.length;
     },
   },
+
+  created() {},
 
   methods: {
     showForm() {
       this.formShow = !this.formShow;
     },
-    savePokemon() {
-      this.pokemon.id = this.getNewId();
-      // this.bug.image = this.defaultimg;
-      this.$store.commit("SAVE_POKEMON", this.pokemon);
-      this.bug = {
+    clearForm() {
+      this.pokemon = {
         id: "",
-        title: "",
-        description: "",
-        priority: "",
-        isOpen: true,
-        resolution: "",
-        image: "",
+        name: "",
+        type1: "",
+        type2: "",
+        level: "",
+        evolvesFrom: "",
+        evolvesTo: "",
+        active: false,
       };
-      this.formShow = false;
+
     },
-    getNewId() {
-      let lastId = this.$store.state.lastId;
-      this.$store.state.lastId++;
-      return lastId + 1;
+    savePokemon() {
+      let pokeName = this.pokemon.name;
+      let pokeLevel = this.pokemon.level.toString();
+      PokeService.getPokemon(pokeName).then(response => {
+        if (response.status == 200){
+          let pokemonDetails = response.data;
+          this.$store.commit("SET_POKEMON", pokemonDetails);
+        } 
+          this.pokemon.level = pokeLevel;
+          this.pokemon.id = this.$store.state.currentPokemon.id;
+          this.pokemon.name = this.$store.state.currentPokemon.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.name.slice(1);
+          this.pokemon.type1 = this.$store.state.currentPokemon.types[0].type.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.types[0].type.name.slice(1);
+          if (this.$store.state.currentPokemon.types[1]){
+          this.pokemon.type2 = this.$store.state.currentPokemon.types[1].type.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.types[1].type.name.slice(1);
+          } else {
+            this.pokemon.type2 = "-";
+          }
+          this.$store.commit("SAVE_POKEMON", this.pokemon);
+      }).catch(error => {
+        this.errorCode = error.response.status;
+        alert("Pokemon not found!");
+      });
+      
+      this.clearForm();
+      this.formShow = false;
     },
   },
 };
@@ -154,24 +179,12 @@ export default {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <style lang="scss">
 .addBtn {
   margin: 20px;
 }
-.TODO {
-  color: red;
+.form > input, .form > select {
+  margin-right: 1rem;
 }
 .status {
   border-radius: 0.5rem;
@@ -180,35 +193,11 @@ export default {
   font-weight: bold;
   box-shadow: 1px 1px gray;
 
-  &.status-open {
+  &.status-inactive {
     background-color: lightcoral;
   }
-  &.status-closed {
+  &.status-active {
     background-color: lightgreen;
-  }
-}
-
-.priority {
-  border-radius: 0.5rem;
-  padding: 0.25rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  box-shadow: 1px 1px gray;
-
-  &.priority-1 {
-    background-color: lightseagreen;
-  }
-  &.priority-2 {
-    background-color: lightblue;
-  }
-  &.priority-3 {
-    background-color: gray;
-  }
-  &.priority-4 {
-    background-color: lightsalmon;
-  }
-  &.priority-5 {
-    background-color: lightcoral;
   }
 }
 
@@ -224,8 +213,8 @@ table {
   }
 
   thead tr {
-    background-color: purple;
-    color: yellow;
+    background-color: #3B4CCA;
+    color: #FFDE00;
   }
 
   tbody {

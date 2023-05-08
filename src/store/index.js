@@ -28,13 +28,17 @@ export default new Vuex.Store({
         evolvesTo: 'Venussaur',
         active: true
       },
-    ]
+    ],
+    currentPokemon: {}
   },
   getters: {
   },
   mutations: {
     SAVE_POKEMON(state, newPokemon) {
       state.pokemon.push(newPokemon);
+    },
+    SET_POKEMON(state, pokemonDetails) {
+      state.currentPokemon = pokemonDetails;
     }
   },
   actions: {

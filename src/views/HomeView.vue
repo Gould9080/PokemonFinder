@@ -2,9 +2,9 @@
   <div class="home">
     <img alt="pokemon logo" src="../assets/pokemonlogo2.png" />
 
-    <h2>Do you really have to catch them all?</h2>
+    <h2>Do you <span style="font-style: italic;">really</span> have to catch them all?</h2>
     <p>
-      If you insist on catching them all, please
+      If you must insist on catching them all, please
       <router-link :to="{ name: 'Pokemon' }">check out our list</router-link>
       of certified Pokemon.
     </p>
@@ -16,15 +16,9 @@ export default {
   name: "HomeView",
   data() {
     return {
-      numLawsuits: 13,
     };
   },
-  computed: {
-    monthsUntilOpen() {
-      const monthsPerLawsuit = 5;
-      return this.numLawsuits * monthsPerLawsuit;
-    },
-  },
+  computed: {},
   components: {},
 };
 </script>
