@@ -39,7 +39,32 @@ export default new Vuex.Store({
     },
     SET_POKEMON(state, pokemonDetails) {
       state.currentPokemon = pokemonDetails;
-    }
+    },
+    SORT_POKEMON_ID(state) {
+      state.pokemon.sort((a, b) => a.id - b.id)
+    },
+    SORT_POKEMON_NAME(state) {
+      state.pokemon.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      })
+    },
+    SORT_POKEMON_TYPE(state) {
+      state.pokemon.sort((a, b) => {
+        if (a.type1 < b.type1) {
+          return -1;
+        }
+        if (a.type1 > b.type1) {
+          return 1;
+        }
+        return 0;
+      })
+    },
   },
   actions: {
   },

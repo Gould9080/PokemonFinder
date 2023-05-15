@@ -5,14 +5,15 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type 1</th>
+          <th @click.prevent="sortByID">ID</th>
+          <th @click.prevent="sortByName">Name</th>
+          <th @click.prevent="sortByType">Type 1</th>
           <th>Type 2</th>
           <th>Status</th>
         </tr>
       </thead>
 
+      <!--  -->
       <tbody>
         <tr v-for="p in $store.state.pokemon" v-bind:key="p.id">
           <td>
@@ -77,11 +78,8 @@
 
     <form class="form" v-if="formShow" v-on:submit.prevent="savePokemon">
       <input type="text" placeholder="Name" v-model="pokemon.name" />
+      <label for="level">Level: </label>
       <!-- 
-      <input type="text" placeholder="Type 1" v-model="pokemon.type1" />
-      <input type="text" placeholder="Type 2" v-model="pokemon.type2" />
-      -->
-      <label for="rating">Level: </label>
       <select id="priority" v-model="pokemon.level">
         <option value="1">1</option>
         <option value="2">2</option>
@@ -89,6 +87,8 @@
         <option value="4">4</option>
         <option value="5">5</option>
       </select>
+      -->
+      <input type="number" name="" id="level">
       <button>Save</button>
     </form>
   </section>
@@ -111,6 +111,8 @@ export default {
         evolvesTo: "",
         active: false,
       },
+      pokeList: [],
+      sortProp: "id",
       formShow: false,
       defaultimg: "pokeball.png",
       errorCode: "",
@@ -144,7 +146,18 @@ export default {
         evolvesTo: "",
         active: false,
       };
-
+    },
+    sortByID(){
+      this.$store.commit("SORT_POKEMON_ID");
+      console.log("sorted: ID")
+    },
+    sortByName(){
+      this.$store.commit("SORT_POKEMON_NAME");
+      console.log("sorted: name")
+    },
+    sortByType(){
+      this.$store.commit("SORT_POKEMON_TYPE");
+      console.log("sorted: type")
     },
     savePokemon() {
       let pokeName = this.pokemon.name;
@@ -164,12 +177,12 @@ export default {
             this.pokemon.type2 = "-";
           }
           this.$store.commit("SAVE_POKEMON", this.pokemon);
+          this.clearForm();
+
       }).catch(error => {
         this.errorCode = error.response.status;
         alert("Pokemon not found!");
-      });
-      
-      this.clearForm();
+      });     
       this.formShow = false;
     },
   },
@@ -199,6 +212,9 @@ export default {
   &.status-active {
     background-color: lightgreen;
   }
+}
+#level {
+  width: 2rem;
 }
 
 table {
