@@ -18,18 +18,14 @@
         <tr v-for="p in $store.state.pokemon" v-bind:key="p.id">
           <td>
             <!-- ID -->
-            <router-link
-              v-bind:to="{ name: 'PokemonDetails', params: { id: p.id } }"
-            >
+            <router-link v-bind:to="{ name: 'PokemonDetails', params: { id: p.id } }">
               {{ p.id }}
             </router-link>
           </td>
 
           <td>
             <!-- Name -->
-            <router-link
-              v-bind:to="{ name: 'PokemonDetails', params: { id: p.id } }"
-            >
+            <router-link v-bind:to="{ name: 'PokemonDetails', params: { id: p.id } }">
               {{ p.name }}
             </router-link>
           </td>
@@ -60,13 +56,10 @@
           </td> -->
           <td>
             <!-- Type 1 -->
-            <span
-              class="status"
-              :class="{
-                'status-active': p.active,
-                'status-inactive': !p.active,
-              }"
-            >
+            <span class="status" :class="{
+              'status-active': p.active,
+              'status-inactive': !p.active,
+            }">
               {{ p.active ? "Active" : "Inactive" }}
             </span>
           </td>
@@ -80,7 +73,7 @@
       <input type="text" placeholder="Name" v-model="pokemon.name" />
       <label for="level">Level: </label>
       <!-- 
-      <select id="priority" v-model="pokemon.level">
+      <select id="level" v-model="pokemon.level">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -127,9 +120,12 @@ export default {
     numberOfPokemon() {
       return this.$store.state.pokemon.length;
     },
+    capitalize(word) {
+      return word.slice(0, 1).toUpperCase() + word.slice(1);
+    },
   },
 
-  created() {},
+  created() { },
 
   methods: {
     showForm() {
@@ -147,44 +143,48 @@ export default {
         active: false,
       };
     },
-    sortByID(){
+    sortByID() {
       this.$store.commit("SORT_POKEMON_ID");
-      console.log("sorted: ID")
+      //console.log("sorted: ID")
     },
-    sortByName(){
+    sortByName() {
       this.$store.commit("SORT_POKEMON_NAME");
-      console.log("sorted: name")
+      //console.log("sorted: name")
     },
-    sortByType(){
+    sortByType() {
       this.$store.commit("SORT_POKEMON_TYPE");
-      console.log("sorted: type")
+      //console.log("sorted: type")
     },
     savePokemon() {
-      let pokeName = this.pokemon.name;
+      let pokeName = this.pokemon.name.toLowerCase();
       let pokeLevel = this.pokemon.level.toString();
       PokeService.getPokemon(pokeName).then(response => {
-        if (response.status == 200){
+        if (response.status == 200) {
           let pokemonDetails = response.data;
           this.$store.commit("SET_POKEMON", pokemonDetails);
-        } 
-          this.pokemon.level = pokeLevel;
-          this.pokemon.id = this.$store.state.currentPokemon.id;
-          this.pokemon.name = this.$store.state.currentPokemon.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.name.slice(1);
-          this.pokemon.type1 = this.$store.state.currentPokemon.types[0].type.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.types[0].type.name.slice(1);
-          if (this.$store.state.currentPokemon.types[1]){
-          this.pokemon.type2 = this.$store.state.currentPokemon.types[1].type.name.slice(0,1).toUpperCase() + this.$store.state.currentPokemon.types[1].type.name.slice(1);
-          } else {
-            this.pokemon.type2 = "-";
-          }
-          this.$store.commit("SAVE_POKEMON", this.pokemon);
-          this.clearForm();
+        }
+        this.pokemon.level = pokeLevel;
+        this.pokemon.id = this.$store.state.currentPokemon.id;
+        this.pokemon.name = this.$store.state.currentPokemon.name.slice(0, 1).toUpperCase() + this.$store.state.currentPokemon.name.slice(1);
+        //let pokeName = this.$store.state.currentPokemon.name;
+        //this.pokemon.name = this.capitalize(pokeName);
+        this.pokemon.type1 = this.$store.state.currentPokemon.types[0].type.name.slice(0, 1).toUpperCase() + this.$store.state.currentPokemon.types[0].type.name.slice(1);
+        if (this.$store.state.currentPokemon.types[1]) {
+          this.pokemon.type2 = this.$store.state.currentPokemon.types[1].type.name.slice(0, 1).toUpperCase() + this.$store.state.currentPokemon.types[1].type.name.slice(1);
+        } else {
+          this.pokemon.type2 = "-";
+        }
+        this.$store.commit("SAVE_POKEMON", this.pokemon);
+        this.clearForm();
 
       }).catch(error => {
         this.errorCode = error.response.status;
-        alert("Pokemon not found!");
-      });     
+        alert("Pokemon not found!!");
+        this.pokemon.name = "";
+      });
       this.formShow = false;
     },
+
   },
 };
 </script>
@@ -196,9 +196,12 @@ export default {
 .addBtn {
   margin: 20px;
 }
-.form > input, .form > select {
+
+.form>input,
+.form>select {
   margin-right: 1rem;
 }
+
 .status {
   border-radius: 0.5rem;
   padding: 0.25rem;
@@ -209,10 +212,12 @@ export default {
   &.status-inactive {
     background-color: lightcoral;
   }
+
   &.status-active {
     background-color: lightgreen;
   }
 }
+
 #level {
   width: 2rem;
 }
@@ -237,6 +242,7 @@ table {
     tr:nth-child(even) {
       background-color: lemonchiffon;
     }
+
     tr:nth-child(odd) {
       background-color: palegoldenrod;
     }

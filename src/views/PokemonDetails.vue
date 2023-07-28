@@ -52,11 +52,10 @@ export default {
       );
     },
     isActive() {
-      // should return false if isOpen = true
       return this.thisPokemon.active;
     },
     pokemonImg() {
-      return this.$store.state.baseUrl + this.thisPokemon.id + ".png";
+      return this.$store.state.baseImgUrl + this.thisPokemon.id + ".png";
     },
   },
   methods: {
@@ -90,7 +89,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
   height: 325px;
-  max-width: 45%;
+  max-width: 50%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
